@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>YouTube to Books!</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: cornflowerblue;
+            background-size: cover;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: whitesmoke;
+        }
+
+        .search-form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-form label {
+            font-weight: bold;
+        }
+
+        .search-form input[type="text"] {
+            padding: 8px;
+            margin: 0 10px;
+        }
+
+        .search-form input[type="submit"] {
+            padding: 8px 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            background-color: #3498db;
+            display: none;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+
+        img {
+            max-width: 100px;
+            max-height: 150px;
+        }
+
+        .content {
+            flex: 1;
+            padding-bottom: 50px;
+        }
+
+        footer {
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background-color: #f2f2f2;
+        }
+
+        .center-text {
+            text-align: center;
+            margin-top: 100px;
+            display: none;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="container">
+            <h1>Convert YouTube Video to Books!</h1>
+            <form class="search-form" method="post" onsubmit="showProcessingText()">
+                <label for="url">Enter URL:</label>
+                <input type="text" id="url"  placeholder="https://www.youtube.com/..."  name="url">
+                <input type="submit"value="Let's do it!">
+            </form>
+
+            <div class="center-text" id="processingText">Processing... Please, wait!</div>
+
+            <table id="book-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Authors</th>
+                        <th>Publisher</th>
+                        <th>Published Date</th>
+                        <th>Cover</th>
+                        <th>Description</th>
+                        <th>Categories</th>
+                        <th>Language</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in headlines %}
+                        <tr>
+                            <td>{{ book['title'] }}</td>
+                            <td>{{ book.get('authors', 'N/A') | join(', ') }}</td>
+                            <td>{{ book.get('publisher', 'N/A') }}</td>
+                            <td>{{ book.get('publishedDate', 'N/A') }}</td>
+                            <td><img src="{{ book.get('image_link', 'N/A') }}" alt="Book Cover"></td>
+                            <td>{{ book.get('description', 'N/A') }}</td>
+                            <td>{{ book.get('categories', 'N/A') | join(', ') }}</td>
+                            <td>{{ book.get('language', 'N/A') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 YouTube to Books! All rights reserved.</p>
+    </footer>
+
+    <script>
+        window.onload = function() {
+            adjustFooterPosition();
+        };
+
+        function adjustFooterPosition() {
+            const content = document.querySelector('.content');
+            const footer = document.querySelector('footer');
+
+            if (content.offsetHeight < window.innerHeight) {
+                const footerHeight = footer.offsetHeight;
+                const contentHeight = window.innerHeight - footerHeight;
+                content.style.minHeight = contentHeight + 'px';
+            }
+        }
+    </script>
+
+    <script>
+        var resultsCount = '{{ headlines | length }}';
+
+        if (resultsCount > 0) {
+            document.getElementById("book-table").style.display = "table";
+        }
+    </script>
+
+    <script>
+        function showProcessingText() {
+            document.getElementById("processingText").style.display = "block";
+        }
+    </script>
+</body>
+</html>
